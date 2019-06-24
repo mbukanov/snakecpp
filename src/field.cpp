@@ -1,4 +1,5 @@
 #include "field.hpp"
+#include <algorithm>
 
 Field::Field(CScreen* screen) {
     this->screen = screen;
@@ -39,10 +40,19 @@ bool Field::isSnakeOnDot(Snake* snake, Dot* dot) {
 }
 
 bool Field::isSnakeBreak(Snake* snake) {
-    if(snake->getPos().front().first < 1 || snake->getPos().front().first > screen->getWidth())
+    int x = snake->getPos().front().first;
+    int y = snake->getPos().front().second;
+    if(x < 1 || x > screen->getWidth())
         return true;
-    if(snake->getPos().front().second < 1 || snake->getPos().front().second > screen->getHeight())
+    if(y < 1 || y > screen->getHeight())
         return true;
+    std::list<std::pair<int, int>> pos = snake->getPos();
+    pos.pop_front();
+    for(auto it = pos.begin(); it != pos.end(); it++) {
+        if(it->first == x && it->second == y)
+            return true;
+    }
+
     return false;
 }
 
