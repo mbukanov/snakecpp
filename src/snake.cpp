@@ -1,5 +1,6 @@
 #include "snake.hpp"
 #include <unistd.h>
+#include <algorithm>
 
 Snake::Snake(CScreen *screen) {
     this->screen = screen;
@@ -11,16 +12,31 @@ Snake::Snake(CScreen *screen) {
 void Snake::move(int direction) {
     int x = pos.front().first;
     int y = pos.front().second;
-    pos.pop_back();
     if(direction == UP) {
-        pos.push_front(std::make_pair(x, y-1));
+        x = x;
+        y = y-1;
     } else if(direction == DOWN) {
-        pos.push_front(std::make_pair(x, y+1));
+        x = x;
+        y = y+1;
     } else if(direction == RIGHT) {
-        pos.push_front(std::make_pair(x+1, y));
+        x = x+1;
+        y = y;
     } else if(direction == LEFT) {
-        pos.push_front(std::make_pair(x-1, y));
+        x = x - 1;
+        y = y;
     }
+
+    
+    std::pair<int, int> prev_cell = getPrevCell();
+    if(exists(prev_cell.first, prev_cell.second)) {
+        if(prev_cell.first == x && prev_cell.second == y)
+            return; // We can't turn to 180 degree and continue moving
+    }
+    
+    pos.pop_back();
+    pos.push_front(std::make_pair(x, y));
+
+
 }
 
 std::list<std::pair<int,int>> Snake::getPos() {
@@ -30,3 +46,17 @@ std::list<std::pair<int,int>> Snake::getPos() {
 void Snake::addCell(std::pair<int, int> cell) {
     pos.push_front(cell);
 }
+
+bool Snake::exists(int x, int y) {
+    return std::find(pos.begin(), pos.end(), std::make_pair(x, y)) != pos.end();
+}
+
+std::pair<int, int> Snake::getPrevCell() {
+    if(pos.size() > 1) {
+        std::list<std::pair<int, int>> temp = pos;
+        temp.pop_front();
+        return std::make_pair(temp.front().first, temp.front().second);
+    }
+    return std::make_pair(-1, -1);
+}
+

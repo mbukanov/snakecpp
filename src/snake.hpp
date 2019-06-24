@@ -13,6 +13,10 @@ public:
     void move(int direction);
     std::list<std::pair<int,int>> getPos();
     void addCell(std::pair<int, int> cell);
+    std::pair<int, int> getPrevCell();
+    bool exists(int x, int y);
+
+
 
 private:
     CScreen* screen;
